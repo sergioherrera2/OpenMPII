@@ -136,6 +136,7 @@ int main ()
 
     // loop 1 
     double l1_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=1; i<(N1-1); i++) {
         x = B[i] / (B[i] + 1.0);
         A[i] = (x + B[i] + 1.0) / 1000.0;
@@ -168,6 +169,7 @@ int main ()
 
     // loop 4
     double l4_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=2; i<N6; i++) {
         H[i] = 3.5 / (7.0/N[i-1] + 2.0/H[i]);
         N[i] = N[i] / (N[i]+2.5) + 3.5 / N[i];
@@ -178,6 +180,7 @@ int main ()
 
     // loop 5
     double l5_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=4; i<N7; i++) {
         M[i] = M[i] * 1.7 - P[i-4];
         R[i] = M[i-4] * 0.9 + R[i];
