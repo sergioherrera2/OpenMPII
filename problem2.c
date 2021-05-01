@@ -98,39 +98,59 @@ int main ()
 
     /* 0. INITIALIZATION */
     // 1. vector initialization
+    double i1_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=0; i<N1; i++) {
         A[i] = 0.0;
         B[i] = (double)(N1-i+2);
         C[i] = 1 / 10.0;
         E[i] = 0.0;
     }
+    double i1_time_end = omp_get_wtime();
+    double i1_time = i1_time_end - i1_time_init;
 
     // 2. D: Initialization
+    double i2_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=0; i<N2; i++)
         for(j=0; j<N3; j++) {
             D[i][j] = 6.0;
         }
-    
+    double i2_time_end = omp_get_wtime();
+    double i2_time = i2_time_end - i2_time_init;
+
     // 3. image initialization
+    double i3_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=0; i<N4; i++)
         for(j=0; j<N5; j++) {
             if(i%3) image[i][j] = (i+j) % PIXMAX;
             else image[i][j]= (i+i*j) % PIXMAX;
         }
-    
+    double i3_time_end = omp_get_wtime();
+    double i3_time = i3_time_end - i3_time_init;
+
     // 4. HJN Initialization
+    double i4_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=0; i<N6; i++) {
         H[i] = 1.0;
         J[i] = 6.0;
         N[i] = 3.0;
     }
+    double i4_time_end = omp_get_wtime();
+    double i4_time = i4_time_end - i4_time_init;
 
     // 5. MPR Initialization
+    double i5_time_init = omp_get_wtime();
+    #pragma omp parallel for
     for(i=0; i<N7; i++) {
         M[i] = 3.0;
         P[i] = 4.0;
         R[i] = 5.0;
     }
+    double i5_time_end = omp_get_wtime();
+    double i5_time = i5_time_end - i5_time_init;
 
     /* 1. EXECUTION */
 
@@ -242,6 +262,11 @@ int main ()
     printf("P*R = %18.2f\n", sp3);
     printf("\n\n");
     printf("--- TIMES ---\n");
+    printf("Time initiation loop 1: %f\n", i1_time);
+    printf("Time initiation loop 2: %f\n", i2_time);
+    printf("Time initiation loop 3: %f\n", i3_time);
+    printf("Time initiation loop 4: %f\n", i4_time);
+    printf("Time initiation loop 5: %f\n", i5_time);
     printf("Time loop 1: %f\n", l1_time);
     printf("Time loop 2: %f\n", l2_time);
     printf("Time loop 3: %f\n", l3_time);
