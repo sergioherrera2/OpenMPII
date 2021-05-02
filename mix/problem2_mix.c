@@ -99,7 +99,7 @@ int main ()
     /* 0. INITIALIZATION */
     // 1. vector initialization
     double i1_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(A) shared(B) shared(C) shared(E)
     for(i=0; i<N1; i++) {
         A[i] = 0.0;
         B[i] = (double)(N1-i+2);
@@ -111,7 +111,7 @@ int main ()
 
     // 2. D: Initialization
     double i2_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2) shared(D)
     for(i=0; i<N2; i++)
         for(j=0; j<N3; j++) {
             D[i][j] = 6.0;
@@ -121,7 +121,7 @@ int main ()
 
     // 3. image initialization
     double i3_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for collapse(2) shared(image) private(i,j)
     for(i=0; i<N4; i++)
         for(j=0; j<N5; j++) {
             if(i%3) image[i][j] = (i+j) % PIXMAX;
@@ -132,7 +132,7 @@ int main ()
 
     // 4. HJN Initialization
     double i4_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(H) shared(J) shared(N)
     for(i=0; i<N6; i++) {
         H[i] = 1.0;
         J[i] = 6.0;
@@ -143,7 +143,7 @@ int main ()
 
     // 5. MPR Initialization
     double i5_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(M) shared(P) shared(R)
     for(i=0; i<N7; i++) {
         M[i] = 3.0;
         P[i] = 4.0;
@@ -156,7 +156,7 @@ int main ()
 
     // loop 1 
     double l1_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(A) shared(B) shared(C) shared(E)
     for(i=1; i<(N1-1); i++) {
         x = B[i] / (B[i] + 1.0);
         A[i] = (x + B[i] + 1.0) / 1000.0;
@@ -169,6 +169,7 @@ int main ()
     // loop 2
     double l2_time_init = omp_get_wtime();
     sum = 0.0;
+    #pragma omp parallel for collapse(2) shared(D) reduction(+: sum)
     for(i=3; i<N2; i++)
         for(j=0; j<N3; j++) {
             D[i][j] = D[i-3][j] / 3.0 + x + E[i];
@@ -181,7 +182,7 @@ int main ()
     double l3_time_init = omp_get_wtime();
     for(i=0; i<PIXMAX; i++) 
       histo[i] = 0;
-   
+    #pragma omp parallel for collapse(2) shared(image) reduction(+: histo)
     for(i=0; i<N4; i++)
       for(j=0; j<N5; j++) {
          histo[image[i][j]] = histo[image[i][j]] + 1;
@@ -191,7 +192,7 @@ int main ()
 
     // loop 4
     double l4_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(H) shared(J) shared(N)
     for(i=2; i<N6; i++) {
         H[i] = 3.5 / (7.0/N[i-1] + 2.0/H[i]);
         N[i] = N[i] / (N[i]+2.5) + 3.5 / N[i];
@@ -202,7 +203,7 @@ int main ()
 
     // loop 5
     double l5_time_init = omp_get_wtime();
-    #pragma omp parallel for
+    #pragma omp parallel for shared(M) shared(P) shared(R)
     for(i=4; i<N7; i++) {
         M[i] = M[i] * 1.7 - P[i-4];
         R[i] = M[i-4] * 0.9 + R[i];
